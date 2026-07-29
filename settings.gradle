@@ -1,0 +1,2 @@
+rootProject.name = "TarixQollanma"
+include ':app'
