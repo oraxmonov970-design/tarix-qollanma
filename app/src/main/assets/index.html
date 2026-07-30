@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Tarix Qo'llanma va Testlar</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    background: #F0E6CF;
+    color: #2B2118;
+    font-family: -apple-system, Roboto, "Segoe UI", Arial, sans-serif;
+  }
+  .serif { font-family: Georgia, "Times New Roman", serif; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  header {
+    padding: 24px 20px 18px;
+    text-align: center;
+    border-bottom: 3px double #C9A227;
+  }
+  header .eyebrow {
+    letter-spacing: 0.25em;
+    font-size: 11px;
+    color: #A4462B;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1B2A4A;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 16px 8px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #1B2A4A;
+    padding: 4px 8px;
+  }
+  .topbar h2 {
+    font-size: 1.1rem;
+    color: #1B2A4A;
+    margin: 0;
+  }
+
+  main { padding: 12px 16px 60px; max-width: 720px; margin: 0 auto; }
+
+  .btn {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    text-align: center;
+  }
+  .btn-primary { background: #1B2A4A; color: #F0E6CF; }
+  .btn-gold { background: #C9A227; color: #1B2A4A; }
+  .btn-outline { background: transparent; color: #1B2A4A; border: 1.5px solid #1B2A4A; }
+  .btn-danger { background: transparent; color: #A4462B; border: 1.5px solid #A4462B; }
+  .btn-block { display: block; width: 100%; margin-top: 10px; }
+  .btn:active { transform: scale(0.98); }
+
+  .big-test-card {
+    background: linear-gradient(135deg, #1B2A4A, #2F5D62);
+    color: #F0E6CF;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+    border: 2px solid #C9A227;
+  }
+  .big-test-card h3 { margin: 0 0 4px; font-size: 1.2rem; }
+  .big-test-card p { margin: 0 0 12px; font-size: 13px; opacity: 0.85; }
+
+  .topic-card {
+    background: #FAF5E8;
+    border: 1px solid #DDD0AE;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .topic-card .info { min-width: 0; }
+  .topic-card .title { font-weight: 600; font-size: 14.5px; color: #1B2A4A; }
+  .topic-card .tag { font-size: 11px; color: #A4462B; margin-top: 3px; }
+  .topic-card .count { font-size: 11px; color: #5A5140; margin-top: 2px; }
+  .chev { color: #C9A227; font-size: 20px; }
+
+  .empty-box {
+    text-align: center;
+    padding: 40px 20px;
+    color: #5A5140;
+    font-size: 13.5px;
+  }
+
+  .guide-text {
+    background: #FAF5E8;
+    border: 1px solid #DDD0AE;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    margin-bottom: 16px;
+  }
+
+  label.field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5A5140;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 14px 0 6px;
+  }
+  input[type=text], textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid #C9A227;
+    background: #FAF5E8;
+    color: #2B2118;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+
+  .q-block {
+    background: #FAF5E8;
+    border: 1px solid #DDD0AE;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 12px;
+  }
+  .q-block .q-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .q-head span { font-size: 12px; font-weight: 700; color: #A4462B; }
+  .opt-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .opt-row input[type=text] { flex: 1; }
+  .opt-row input[type=radio] { width: 18px; height: 18px; accent-color: #1B2A4A; }
+
+  .remove-link {
+    background: none; border: none; color: #A4462B; font-size: 12px; font-weight: 600;
+  }
+
+  .quiz-progress { font-size: 12px; color: #5A5140; margin-bottom: 10px; }
+  .quiz-q { font-size: 16px; font-weight: 600; color: #1B2A4A; margin-bottom: 16px; line-height: 1.4; }
+  .opt-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #C9A227;
+    background: #FAF5E8;
+    color: #2B2118;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .opt-btn.correct { background: #2F5D62; border-color: #2F5D62; color: #F0E6CF; }
+  .opt-btn.wrong { background: #A4462B; border-color: #A4462B; color: #F0E6CF; }
+  .opt-btn.disabled { pointer-events: none; }
+
+  .score-box {
+    text-align: center;
+    padding: 24px 16px;
+    background: #FAF5E8;
+    border: 2px solid #C9A227;
+    border-radius: 16px;
+    margin-bottom: 16px;
+  }
+  .score-box .num { font-size: 2.4rem; font-weight: 700; color: #1B2A4A; font-family: Georgia, serif; }
+  .score-box .lbl { font-size: 13px; color: #5A5140; margin-top: 4px; }
+
+  .review-item {
+    background: #FAF5E8;
+    border: 1px solid #DDD0AE;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .review-item .q { font-size: 13.5px; font-weight: 600; color: #1B2A4A; margin-bottom: 6px; }
+  .review-item .your { font-size: 12.5px; color: #A4462B; }
+  .review-item .right { font-size: 12.5px; color: #2F5D62; margin-top: 2px; }
+
+  .region-tag {
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid;
+    display: inline-block;
+  }
+  .region-tag.markaziy { color: #2F5D62; border-color: #2F5D62; }
+  .region-tag.jahon { color: #A4462B; border-color: #A4462B; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">O'QITUVCHI UCHUN QO'LLANMA</p>
+  <h1 class="serif">Tarix Qo'llanma va Testlar</h1>
+</header>
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <main>
+    <div class="big-test-card" id="bigTestCard">
+      <h3 class="serif">Katta test</h3>
+      <p id="bigTestDesc">Barcha mavzulardan yig'ilgan savollar</p>
+      <button class="btn btn-gold btn-block" onclick="startBigTest()">Katta testni boshlash</button>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="openForm()">+ Yangi mavzu qo'shish</button>
+
+    <div id="topicList" style="margin-top:16px;"></div>
+  </main>
+</div>
+
+<!-- TOPIC FORM -->
+<div class="screen" id="screen-form">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <h2 id="formHeading">Yangi mavzu</h2>
+  </div>
+  <main>
+    <label class="field-label">Mavzu nomi</label>
+    <input type="text" id="f-title" placeholder="Masalan: Amir Temur va Temuriylar davri" />
+
+    <label class="field-label">Yo'nalish</label>
+    <select id="f-region">
+      <option value="markaziy">Markaziy Osiyo / O'zbekiston</option>
+      <option value="jahon">Jahon tarixi</option>
+    </select>
+
+    <label class="field-label">Qo'llanma matni</label>
+    <textarea id="f-guide" placeholder="Mavzu bo'yicha tushuntirish matnini shu yerga yozing..."></textarea>
+
+    <label class="field-label">Test savollari</label>
+    <div id="qBuilder"></div>
+    <button class="btn btn-outline btn-block" onclick="addQuestionBlock()">+ Savol qo'shish</button>
+
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="goHome()">Bekor qilish</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveTopic()">Saqlash</button>
+    </div>
+  </main>
+</div>
+
+<!-- TOPIC VIEW -->
+<div class="screen" id="screen-topic">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <h2 id="topicViewTitle"></h2>
+  </div>
+  <main>
+    <div id="topicViewTag" style="margin-bottom:10px;"></div>
+    <div class="guide-text" id="topicViewGuide"></div>
+    <button class="btn btn-gold btn-block" id="topicStartTestBtn" onclick="startTopicTest()">Testni boshlash</button>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="editTopic()">Tahrirlash</button>
+      <button class="btn btn-danger" style="flex:1;" onclick="deleteTopic()">O'chirish</button>
+    </div>
+  </main>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="screen-quiz">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <h2 id="quizHeading">Test</h2>
+  </div>
+  <main>
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div class="quiz-q" id="quizQ"></div>
+    <div id="quizOpts"></div>
+  </main>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="screen-result">
+  <div class="topbar">
+    <h2>Natija</h2>
+  </div>
+  <main>
+    <div class="score-box">
+      <div class="num" id="resultScore"></div>
+      <div class="lbl">to'g'ri javob</div>
+    </div>
+    <div id="resultReview"></div>
+    <button class="btn btn-primary btn-block" onclick="goHome()">Bosh sahifaga qaytish</button>
+  </main>
+</div>
+
+<script>
+const STORAGE_KEY = "tarix_qollanma_topics_v1";
+let topics = [];
+let currentTopicId = null;
+let editingId = null;
+let quizQueue = [];
+let quizIndex = 0;
+let quizScore = 0;
+let quizWrong = [];
+let quizIsBig = false;
+
+function loadTopics() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    topics = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    topics = [];
+  }
+}
+function saveTopics() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(topics));
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function goHome() {
+  renderHome();
+  showScreen("screen-home");
+}
+
+function renderHome() {
+  const totalQ = topics.reduce((sum, t) => sum + t.questions.length, 0);
+  document.getElementById("bigTestDesc").textContent =
+    totalQ > 0 ? `Barcha mavzulardan yig'ilgan ${totalQ} ta savol` : "Hozircha savollar yo'q — avval mavzu qo'shing";
+  document.getElementById("bigTestCard").style.opacity = totalQ > 0 ? "1" : "0.5";
+  document.querySelector("#bigTestCard button").disabled = totalQ === 0;
+
+  const list = document.getElementById("topicList");
+  if (topics.length === 0) {
+    list.innerHTML = `<div class="empty-box">Hali mavzu qo'shilmagan.<br>Yuqoridagi tugma orqali birinchi mavzuni yarating.</div>`;
+    return;
+  }
+  list.innerHTML = topics.map(t => `
+    <div class="topic-card" onclick="openTopic('${t.id}')">
+      <div class="info">
+        <div class="title">${escapeHtml(t.title)}</div>
+        <div class="tag"><span class="region-tag ${t.region}">${t.region === 'markaziy' ? "Markaziy Osiyo" : "Jahon tarixi"}</span></div>
+        <div class="count">${t.questions.length} ta test savoli</div>
+      </div>
+      <div class="chev">›</div>
+    </div>
+  `).join("");
+}
+
+function escapeHtml(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ---------- FORM ----------
+function openForm() {
+  editingId = null;
+  document.getElementById("formHeading").textContent = "Yangi mavzu";
+  document.getElementById("f-title").value = "";
+  document.getElementById("f-region").value = "markaziy";
+  document.getElementById("f-guide").value = "";
+  document.getElementById("qBuilder").innerHTML = "";
+  addQuestionBlock();
+  showScreen("screen-form");
+}
+
+function editTopic() {
+  const t = topics.find(x => x.id === currentTopicId);
+  if (!t) return;
+  editingId = t.id;
+  document.getElementById("formHeading").textContent = "Mavzuni tahrirlash";
+  document.getElementById("f-title").value = t.title;
+  document.getElementById("f-region").value = t.region;
+  document.getElementById("f-guide").value = t.guide;
+  document.getElementById("qBuilder").innerHTML = "";
+  t.questions.forEach(q => addQuestionBlock(q));
+  if (t.questions.length === 0) addQuestionBlock();
+  showScreen("screen-form");
+}
+
+let qBlockCounter = 0;
+function addQuestionBlock(existing) {
+  qBlockCounter++;
+  const id = "qb" + qBlockCounter;
+  const q = existing || { q: "", opts: ["", "", "", ""], correct: 0 };
+  const wrap = document.createElement("div");
+  wrap.className = "q-block";
+  wrap.id = id;
+  wrap.innerHTML = `
+    <div class="q-head">
+      <span>SAVOL</span>
+      <button type="button" class="remove-link" onclick="document.getElementById('${id}').remove()">O'chirish</button>
+    </div>
+    <input type="text" class="q-text" placeholder="Savol matni" value="${escapeAttr(q.q)}" />
+    ${[0,1,2,3].map(i => `
+      <div class="opt-row">
+        <input type="radio" name="${id}-correct" value="${i}" ${q.correct === i ? "checked" : ""} />
+        <input type="text" class="q-opt" placeholder="${String.fromCharCode(65+i)} variant" value="${escapeAttr(q.opts[i] || '')}" />
+      </div>
+    `).join("")}
+  `;
+  document.getElementById("qBuilder").appendChild(wrap);
+}
+
+function escapeAttr(s) {
+  return (s || "").replace(/"/g, "&quot;");
+}
+
+function saveTopic() {
+  const title = document.getElementById("f-title").value.trim();
+  const region = document.getElementById("f-region").value;
+  const guide = document.getElementById("f-guide").value.trim();
+
+  if (!title) { alert("Mavzu nomini kiriting."); return; }
+
+  const blocks = Array.from(document.querySelectorAll("#qBuilder .q-block"));
+  const questions = [];
+  for (const b of blocks) {
+    const qText = b.querySelector(".q-text").value.trim();
+    const optInputs = Array.from(b.querySelectorAll(".q-opt"));
+    const opts = optInputs.map(i => i.value.trim());
+    const correctRadio = b.querySelector("input[type=radio]:checked");
+    if (!qText || opts.some(o => !o) || !correctRadio) continue;
+    questions.push({ q: qText, opts: opts, correct: parseInt(correctRadio.value) });
+  }
+
+  if (editingId) {
+    const t = topics.find(x => x.id === editingId);
+    t.title = title; t.region = region; t.guide = guide; t.questions = questions;
+  } else {
+    topics.push({ id: "t" + Date.now(), title, region, guide, questions });
+  }
+  saveTopics();
+  goHome();
+}
+
+// ---------- TOPIC VIEW ----------
+function openTopic(id) {
+  currentTopicId = id;
+  const t = topics.find(x => x.id === id);
+  document.getElementById("topicViewTitle").textContent = t.title;
+  document.getElementById("topicViewTag").innerHTML =
+    `<span class="region-tag ${t.region}">${t.region === 'markaziy' ? "Markaziy Osiyo" : "Jahon tarixi"}</span>`;
+  document.getElementById("topicViewGuide").textContent = t.guide || "(Qo'llanma matni kiritilmagan)";
+  const btn = document.getElementById("topicStartTestBtn");
+  if (t.questions.length === 0) {
+    btn.textContent = "Bu mavzuda test yo'q";
+    btn.disabled = true;
+  } else {
+    btn.textContent = `Testni boshlash (${t.questions.length} ta savol)`;
+    btn.disabled = false;
+  }
+  showScreen("screen-topic");
+}
+
+function deleteTopic() {
+  if (!confirm("Ushbu mavzuni butunlay o'chirmoqchimisiz?")) return;
+  topics = topics.filter(x => x.id !== currentTopicId);
+  saveTopics();
+  goHome();
+}
+
+// ---------- QUIZ ----------
+function startTopicTest() {
+  const t = topics.find(x => x.id === currentTopicId);
+  if (!t || t.questions.length === 0) return;
+  quizIsBig = false;
+  quizQueue = t.questions.map(q => ({...q}));
+  document.getElementById("quizHeading").textContent = t.title;
+  runQuiz();
+}
+
+function startBigTest() {
+  const all = [];
+  topics.forEach(t => t.questions.forEach(q => all.push({...q})));
+  if (all.length === 0) return;
+  quizIsBig = true;
+  quizQueue = all;
+  document.getElementById("quizHeading").textContent = "Katta test";
+  runQuiz();
+}
+
+function runQuiz() {
+  quizIndex = 0;
+  quizScore = 0;
+  quizWrong = [];
+  showScreen("screen-quiz");
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const q = quizQueue[quizIndex];
+  document.getElementById("quizProgress").textContent = `Savol ${quizIndex + 1} / ${quizQueue.length}`;
+  document.getElementById("quizQ").textContent = q.q;
+  const optsDiv = document.getElementById("quizOpts");
+  optsDiv.innerHTML = q.opts.map((o, i) => `
+    <button class="opt-btn" data-i="${i}" onclick="answerQuiz(${i})">${escapeHtml(o)}</button>
+  `).join("");
+}
+
+function answerQuiz(selected) {
+  const q = quizQueue[quizIndex];
+  const buttons = document.querySelectorAll("#quizOpts .opt-btn");
+  buttons.forEach(b => b.classList.add("disabled"));
+  buttons[q.correct].classList.add("correct");
+  if (selected === q.correct) {
+    quizScore++;
+  } else {
+    buttons[selected].classList.add("wrong");
+    quizWrong.push({ q: q.q, your: q.opts[selected], right: q.opts[q.correct] });
+  }
+  setTimeout(() => {
+    quizIndex++;
+    if (quizIndex < quizQueue.length) {
+      renderQuizQuestion();
+    } else {
+      showResult();
+    }
+  }, 900);
+}
+
+function showResult() {
+  document.getElementById("resultScore").textContent = `${quizScore} / ${quizQueue.length}`;
+  const rev = document.getElementById("resultReview");
+  if (quizWrong.length === 0) {
+    rev.innerHTML = `<div class="empty-box">Barcha savollarga to'g'ri javob berdingiz! 🎉</div>`;
+  } else {
+    rev.innerHTML = `<p class="field-label" style="margin-top:0;">Xato javoblar</p>` + quizWrong.map(w => `
+      <div class="review-item">
+        <div class="q">${escapeHtml(w.q)}</div>
+        <div class="your">Sizning javobingiz: ${escapeHtml(w.your)}</div>
+        <div class="right">To'g'ri javob: ${escapeHtml(w.right)}</div>
+      </div>
+    `).join("");
+  }
+  showScreen("screen-result");
+}
+
+// init
+loadTopics();
+renderHome();
+</script>
+</body>
+    </html>
