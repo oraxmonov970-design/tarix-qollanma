@@ -295,6 +295,7 @@
     <div class="quiz-progress" id="quizProgress"></div>
     <div class="quiz-q" id="quizQ"></div>
     <div id="quizOpts"></div>
+   <button class="btn btn-gold btn-block" id="nextBtn" style="display:none;" onclick="goNext()">Keyingisi</button>
   </main>
 </div>
 
@@ -601,6 +602,7 @@ function renderQuizQuestion() {
   optsDiv.innerHTML = q.opts.map((o, i) => `
     <button class="opt-btn" data-i="${i}" onclick="answerQuiz(${i})">${escapeHtml(o)}</button>
   `).join("");
+ document.getElementById("nextBtn").style.display = "none";
 }
 
 function answerQuiz(selected) {
@@ -614,14 +616,19 @@ function answerQuiz(selected) {
     buttons[selected].classList.add("wrong");
     quizWrong.push({ q: q.q, your: q.opts[selected], right: q.opts[q.correct] });
   }
-  setTimeout(() => {
-    quizIndex++;
-    if (quizIndex < quizQueue.length) {
-      renderQuizQuestion();
-    } else {
-      showResult();
+  const nextBtn = document.getElementById("nextBtn");
+      nextBtn.textContent = (quizIndex + 1 < quizQueue.length) ? "Keyingisi" : "Natijani ko'rish";
+      nextBtn.style.display = "block";
     }
-  }, 900);
+
+    function goNext() {
+      quizIndex++;
+      if (quizIndex < quizQueue.length) {
+        renderQuizQuestion();
+      } else {
+        showResult();
+      }
+ }
 }
 
 function showResult() {
