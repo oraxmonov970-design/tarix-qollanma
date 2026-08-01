@@ -571,7 +571,7 @@ function startTopicTest() {
   const t = topics.find(x => x.id === currentTopicId);
   if (!t || t.questions.length === 0) return;
   quizIsBig = false;
-  quizQueue = t.questions.map(q => ({...q}));
+  quizQueue = t.questions.map(q =>shuffleOptions(q));
   document.getElementById("quizHeading").textContent = t.title;
   runQuiz();
 }
@@ -581,7 +581,7 @@ function startBigTest() {
   topics.forEach(t => t.questions.forEach(q => all.push({...q})));
   if (all.length === 0) return;
   quizIsBig = true;
-  quizQueue = all;
+  quizQueue = all.map(q => shuffleOptions(q));
   document.getElementById("quizHeading").textContent = "Katta test";
   runQuiz();
 }
