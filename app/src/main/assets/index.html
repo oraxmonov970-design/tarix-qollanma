@@ -264,3 +264,95 @@
     <div style="display:flex; gap:10px; margin-top:20px;">
       <button class="btn btn-outline" style="flex:1;" onclick="goHome()">Bekor qilish</button>
       <button class="btn btn-primary" style="flex:1;" onclick="saveTopic()">Saqlash</button>
+     </div>
+  </main>
+</div>
+
+<!-- TOPIC VIEW -->
+<div class="screen" id="screen-topic">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <h2 id="topicViewTitle"></h2>
+  </div>
+  <main>
+    <div id="topicViewTag" style="margin-bottom:10px;"></div>
+    <div class="guide-text" id="topicViewGuide"></div>
+    <button class="btn btn-gold btn-block" id="topicStartTestBtn" onclick="startTopicTest()">Testni boshlash</button>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="editTopic()">Tahrirlash</button>
+      <button class="btn btn-danger" style="flex:1;" onclick="deleteTopic()">O'chirish</button>
+    </div>
+  </main>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="screen-quiz">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <h2 id="quizHeading">Test</h2>
+  </div>
+  <main>
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div class="quiz-q" id="quizQ"></div>
+    <div id="quizOpts"></div>
+    <button class="btn btn-gold btn-block" id="nextBtn" style="display:none;" onclick="goNext()">Keyingisi</button>
+  </main>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="screen-result">
+  <div class="topbar">
+    <h2>Natija</h2>
+  </div>
+  <main>
+    <div class="score-box">
+      <div class="num" id="resultScore"></div>
+      <div class="lbl">to'g'ri javob</div>
+    </div>
+    <div id="resultReview"></div>
+    <button class="btn btn-primary btn-block" onclick="goHome()">Bosh sahifaga qaytish</button>
+  </main>
+</div>
+
+<script>
+const STORAGE_KEY = "tarix_qollanma_topics_v1";
+
+const BUILTIN_TOPICS = [
+  {
+    id: "builtin_1",
+    title: "Qadimgi tarix ildizlari (6-sinf, 1-mavzu)",
+    region: "jahon",
+    guide: `1. Kirish: Vatan tuyg'usi va tabiat manzaralari
+Matn Vatan tushunchasini tabiat manzaralari orqali ochib beradi: viqorli tog'lar, muzlar erimaydigan qoyalar, toshqin daryolar hosil qiluvchi tog' jilg'alari, poyonsiz cho'llar va ularni kesib o'tgan karvon yo'llari. Ushbu yo'llar kesishgan joylarda dunyoning turli mamlakatlaridan kelgan odamlar to'planib, savdo-sotiq qilishgan — bu O'rta Osiyoning qadimdan xalqaro savdo va madaniy aloqalar markazi bo'lganidan dalolat beradi. Bugungi kunda ham vodiylar, cho'l va tog'larda qadimgi shaharlar, qal'alar va ibodatxonalarning xarobalari saqlanib qolgan. Bu joylarni odamlar allaqachon tark etgan bo'lsa-da, qadimshunoslar (arxeologlar) ularni qayta "tiriltirib", o'tmish sirlarini ochib bermoqda.
+
+2. Qadimgi tarixni kim o'rganadi?
+Insoniyatning qadimgi tarixini turli sohalar olimlari o'rganadi: arxeolog — qadimgi manzilgohlarda qazishma ishlarini olib boruvchi olim; antropolog — qadimgi odamlarning suyak qoldiqlarini o'rganuvchi olim; etnograf — hozirgi xalqlarning urf-odat va an'analarini o'rganuvchi olim.
+
+3. Qadimgi tarix bo'yicha manbalar
+3.1. Moddiy (ashyoviy) manbalar — arxeologik qazishmalar davomida topilgan barcha narsalar: mehnat qurollari, sopol idishlar, qurol-yarog'lar, zeb-ziynat buyumlari. Qadimda inson qo'li bilan yaratilgan barcha narsalar ashyoviy manbalar jumlasiga kiradi.
+3.2. Yozma manbalar — arxeologiya ma'lumotlari qadimgi dunyo tarixi haqida to'liq tasavvur berolmaydi, shu sababli olimlar yozma manbalarga ham murojaat qiladilar: "Avesto" kitobi, Behistun qoyasi yozuvlari (Eronda joylashgan), Gerodot, Strabon va Arrian kabi tarixchilarning asarlari.
+
+4. Eng qadimgi tuzumni davrlashtirish
+Jahondagi barcha xalqlarning tarixi ibtidoiy jamoa tuzumidan boshlangan. Insoniyat rivojidagi birinchi bosqich — kishilarning alohida guruhlarga birlashuvi bo'lib, bu eng qadimgi odamlarning dastlabki jamoasi edi.
+4.1. Ijtimoiy tuzum bosqichlari — ibtidoiy jamoalar asta-sekin qarindosh urug'lardan iborat alohida urug' jamoalariga bo'lingan. Dastlab matriarxat (ona urug'i davri, ayol boshchiligidagi jamoa tuzumi) hukm surgan. Keyinchalik mehnat qurollari va xo'jalik yuritish shakllari takomillashgani sababli yetakchilik erkak kishiga o'tib, patriarxat (ota urug'i davri, erkak boshchiligidagi jamoa tuzumi) boshlangan.
+4.2. Tosh davri bosqichlari — eng qadimgi odamlar dastlabki mehnat qurollarini toshdan yasagani uchun arxeologlar insoniyat tarixining boshlanishini "tosh davri" deb ataydilar. Bu davr to'rtta bosqichga bo'linadi: paleolit — qadimgi tosh davri (yunoncha "qadimgi"+"tosh"), mezolit — o'rta tosh davri (yunoncha "o'rta"+"tosh"), neolit — yangi tosh davri (yunoncha "yangi"+"tosh"), eneolit — mis-tosh davri (lotincha "mis"+yunoncha "tosh"). Paleolit o'zi yana ilk, o'rta va so'nggi davrlarga bo'linadi.
+
+5. Asosiy tushunchalar lug'ati
+Arxeolog — qadimgi manzilgohlarda qazishma ishlarini olib boruvchi olim
+Antropolog — qadimgi odamlarning suyak qoldiqlarini o'rganuvchi olim
+Etnograf — hozirgi xalqlarning urf-odat va an'analarini o'rganuvchi olim
+Matriarxat — ona urug'i davri, ayol boshchiligidagi jamoa tuzumi
+Patriarxat — ota urug'i davri, erkak boshchiligidagi jamoa tuzumi
+Paleolit, Mezolit, Neolit, Eneolit — tosh davrining bosqichlari`,
+    questions: [
+      { q: "Qadimgi dunyo tarixi qaysi davrni o'z ichiga oladi?", opts: ["Iso payg'ambar tug'ilganidan to milodiy 476-yilda G'arbiy Rim imperiyasi qulaguniga qadar kechgan voqealar","Eng qadimgi shaharlar, yozuv, davlatlar tashkil topganidan to milodiy 476-yilda G'arbiy Rim imperiyasi qulaguniga qadar kechgan voqealar","Insonlarning ibtidoiy alohida guruhlarga birlashuvidan to 395-yilda Rim imperiyasining ikkiga bo'linguniga qadar kechgan voqealar","Yer yuzida odam paydo bo'lganidan to milodiy 476-yilda G'arbiy Rim imperiyasi qulaguniga qadar"], correct: 3 },
+      { q: "Yer yuzida odam paydo bo'lganidan to milodiy 476-yilda G'arbiy Rim imperiyasi qulaguniga qadar kechgan voqealar tarix fanida qanday ataladi?", opts: ["Antik davr","Ibtidoiy davr","Qadimgi dunyo tarixi","Ilk o'rta asrlar tarixi"], correct: 2 },
+      { q: "Qaysi olimlar qadim zamonlarda odamlar yashagan manzilgohlarda qazishma ishlarini amalga oshiradilar?", opts: ["Lingvistlar","Etnograflar","Antropologlar","Arxeologlar"], correct: 3 },
+      { q: "Qaysi olimlar qadimgi odamlarning qoldiqlari (skelet va bosh chanoq)ni sinchiklab tekshirib, ularning tashqi ko'rinishini tiklaydilar?", opts: ["Lingvistlar","Etnograflar","Antropologlar","Arxeologlar"], correct: 2 },
+      { q: "Qaysi olimlar qadimgi odamlarning ko'pgina udumlari, xo'jalik va madaniy an'analarini saqlab qolgan hozirda mavjud qabilalar va xalqlarni o'rganadilar?", opts: ["Lingvistlar","Etnograflar","Antropologlar","Arxeologlar"], correct: 1 },
+      { q: "Moddiy manbalarga nimalar kiradi?", opts: ["Mehnat qurollari, sopol idishlar, qurol-aslahalar, zeb-ziynat buyumlari","Behistun yozuvlari, Gerodot, Strabon, Sim Syan asarlari","Taqinchoqlar, \"Avesto\" kitobi","Turli yilnomalar, qonunlar majmuyi, biografiyalar"], correct: 0 },
+      { q: "Yozma manbalarga nimalar kiradi?", opts: ["Mehnat qurollari, sopol idishlar, qurol-aslahalar, zeb-ziynat buyumlari","Behistun yozuvlari, Gerodot, Strabon, Sim Syan asarlari","Taqinchoqlar, \"Avesto\" kitobi","Turli yilnomalar, turli taqinchoqlar, zargarlik buyumlari"], correct: 1 },
+      { q: "Moddiy manbalarga nimalar kiradi? (2)", opts: ["Tarixchilar tomonidan yozib qoldirilgan hamma asarlar","Behistun yozuvlari, Gerodot, Strabon, Sim Syan asarlari","Qadimda inson qo'li bilan yaratilgan barcha narsalar","Turli yilnomalar, qonunlar majmuyi, biografiyalar"], correct: 2 },
+      { q: "O'rta Osiyo bo'yicha eng qadimgi yozma manbani aniqlang.", opts: ["Behistun yozuvlari","\"Avesto\" kitobi","Gerodotning \"Tarix\" asari","Sim Syanning \"Tarixiy yilnomalar\" asari"], correct: 1 },
+      { q: "Behistun qoyasi yozuvlari qayerda joylashgan?", opts: ["Iroqda","Afg'onistonda","Turkiyada","Eronda"], correct: 3 },
+     
