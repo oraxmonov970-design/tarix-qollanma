@@ -537,3 +537,221 @@ function renderHome() {
         <div class="title">${escapeHtml(t.title)}</div>
         <div class="tag"><span class="region-tag ${t.region}">${t.region === 'markaziy' ? "Markaziy Osiyo" : "Jahon tarixi"}</span></div>
         <div class="count">${t.questions.length} ta test savoli</div>     
+</div>
+      <div class="chev">›</div>
+    </div>
+  `).join("");
+}
+
+function escapeHtml(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ---------- FORM ----------
+function openForm() {
+  editingId = null;
+  document.getElementById("formHeading").textContent = "Yangi mavzu";
+  document.getElementById("f-title").value = "";
+  document.getElementById("f-region").value = "markaziy";
+  document.getElementById("f-guide").value = "";
+  document.getElementById("qBuilder").innerHTML = "";
+  addQuestionBlock();
+  showScreen("screen-form");
+}
+
+function editTopic() {
+  const t = topics.find(x => x.id === currentTopicId);
+  if (!t) return;
+  editingId = t.id;
+  document.getElementById("formHeading").textContent = "Mavzuni tahrirlash";
+  document.getElementById("f-title").value = t.title;
+  document.getElementById("f-region").value = t.region;
+  document.getElementById("f-guide").value = t.guide;
+  document.getElementById("qBuilder").innerHTML = "";
+  t.questions.forEach(q => addQuestionBlock(q));
+  if (t.questions.length === 0) addQuestionBlock();
+  showScreen("screen-form");
+}
+
+let qBlockCounter = 0;
+function addQuestionBlock(existing) {
+  qBlockCounter++;
+  const id = "qb" + qBlockCounter;
+  const q = existing || { q: "", opts: ["", "", "", ""], correct: 0 };
+  const wrap = document.createElement("div");
+  wrap.className = "q-block";
+  wrap.id = id;
+  wrap.innerHTML = `
+    <div class="q-head">
+      <span>SAVOL</span>
+      <button type="button" class="remove-link" onclick="document.getElementById('${id}').remove()">O'chirish</button>
+    </div>
+    <input type="text" class="q-text" placeholder="Savol matni" value="${escapeAttr(q.q)}" />
+    ${[0,1,2,3].map(i => `
+      <div class="opt-row">
+        <input type="radio" name="${id}-correct" value="${i}" ${q.correct === i ? "checked" : ""} />
+        <input type="text" class="q-opt" placeholder="${String.fromCharCode(65+i)} variant" value="${escapeAttr(q.opts[i] || '')}" />
+      </div>
+    `).join("")}
+  `;
+  document.getElementById("qBuilder").appendChild(wrap);
+}
+
+function escapeAttr(s) {
+  return (s || "").replace(/"/g, "&quot;");
+}
+
+function saveTopic() {
+  const title = document.getElementById("f-title").value.trim();
+  const region = document.getElementById("f-region").value;
+  const guide = document.getElementById("f-guide").value.trim();
+
+  if (!title) { alert("Mavzu nomini kiriting."); return; }
+
+  const blocks = Array.from(document.querySelectorAll("#qBuilder .q-block"));
+  const questions = [];
+  for (const b of blocks) {
+    const qText = b.querySelector(".q-text").value.trim();
+    const optInputs = Array.from(b.querySelectorAll(".q-opt"));
+    const opts = optInputs.map(i => i.value.trim());
+    const correctRadio = b.querySelector("input[type=radio]:checked");
+    if (!qText || opts.some(o => !o) || !correctRadio) continue;
+    questions.push({ q: qText, opts: opts, correct: parseInt(correctRadio.value) });
+  }
+
+  if (editingId) {
+    const t = topics.find(x => x.id === editingId);
+    t.title = title; t.region = region; t.guide = guide; t.questions = questions;
+  } else {
+    topics.push({ id: "t" + Date.now(), title, region, guide, questions });
+  }
+  saveTopics();
+  goHome();
+}
+
+// ---------- TOPIC VIEW ----------
+function openTopic(id) {
+  currentTopicId = id;
+  const t = topics.find(x => x.id === id);
+  document.getElementById("topicViewTitle").textContent = t.title;
+  document.getElementById("topicViewTag").innerHTML =
+    `<span class="region-tag ${t.region}">${t.region === 'markaziy' ? "Markaziy Osiyo" : "Jahon tarixi"}</span>`;
+  document.getElementById("topicViewGuide").textContent = t.guide || "(Qo'llanma matni kiritilmagan)";
+  const btn = document.getElementById("topicStartTestBtn");
+  if (t.questions.length === 0) {
+    btn.textContent = "Bu mavzuda test yo'q";
+    btn.disabled = true;
+  } else {
+    btn.textContent = `Testni boshlash (${t.questions.length} ta savol)`;
+    btn.disabled = false;
+  }
+  showScreen("screen-topic");
+}
+
+function deleteTopic() {
+  if (!confirm("Ushbu mavzuni butunlay o'chirmoqchimisiz?")) return;
+  topics = topics.filter(x => x.id !== currentTopicId);
+  saveTopics();
+  goHome();
+}
+
+function shuffleOptions(q) {
+  const idx = [0, 1, 2, 3];
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  const newOpts = idx.map(i => q.opts[i]);
+  const newCorrect = idx.indexOf(q.correct);
+  return { q: q.q, opts: newOpts, correct: newCorrect };
+}
+
+// ---------- QUIZ ----------
+function startTopicTest() {
+  const t = topics.find(x => x.id === currentTopicId);
+  if (!t || t.questions.length === 0) return;
+  quizIsBig = false;
+  quizQueue = t.questions.map(q => shuffleOptions(q));
+  document.getElementById("quizHeading").textContent = t.title;
+  runQuiz();
+}
+
+function startBigTest() {
+  const all = [];
+  topics.forEach(t => t.questions.forEach(q => all.push({...q})));
+  if (all.length === 0) return;
+  quizIsBig = true;
+  quizQueue = all.map(q => shuffleOptions(q));
+  document.getElementById("quizHeading").textContent = "Katta test";
+  runQuiz();
+}
+
+function runQuiz() {
+  quizIndex = 0;
+  quizScore = 0;
+  quizWrong = [];
+  showScreen("screen-quiz");
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const q = quizQueue[quizIndex];
+  document.getElementById("quizProgress").textContent = `Savol ${quizIndex + 1} / ${quizQueue.length}`;
+  document.getElementById("quizQ").textContent = q.q;
+  const optsDiv = document.getElementById("quizOpts");
+  optsDiv.innerHTML = q.opts.map((o, i) => `
+    <button class="opt-btn" data-i="${i}" onclick="answerQuiz(${i})">${escapeHtml(o)}</button>
+  `).join("");
+  document.getElementById("nextBtn").style.display = "none";
+}
+
+function answerQuiz(selected) {
+  const q = quizQueue[quizIndex];
+  const buttons = document.querySelectorAll("#quizOpts .opt-btn");
+  buttons.forEach(b => b.classList.add("disabled"));
+  buttons[q.correct].classList.add("correct");
+  if (selected === q.correct) {
+    quizScore++;
+  } else {
+    buttons[selected].classList.add("wrong");
+    quizWrong.push({ q: q.q, your: q.opts[selected], right: q.opts[q.correct] });
+  }
+  const nextBtn = document.getElementById("nextBtn");
+  nextBtn.textContent = (quizIndex + 1 < quizQueue.length) ? "Keyingisi" : "Natijani ko'rish";
+  nextBtn.style.display = "block";
+}
+
+function goNext() {
+  quizIndex++;
+  if (quizIndex < quizQueue.length) {
+    renderQuizQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById("resultScore").textContent = `${quizScore} / ${quizQueue.length}`;
+  const rev = document.getElementById("resultReview");
+  if (quizWrong.length === 0) {
+    rev.innerHTML = `<div class="empty-box">Barcha savollarga to'g'ri javob berdingiz! 🎉</div>`;
+  } else {
+    rev.innerHTML = `<p class="field-label" style="margin-top:0;">Xato javoblar</p>` + quizWrong.map(w => `
+      <div class="review-item">
+        <div class="q">${escapeHtml(w.q)}</div>
+        <div class="your">Sizning javobingiz: ${escapeHtml(w.your)}</div>
+        <div class="right">To'g'ri javob: ${escapeHtml(w.right)}</div>
+      </div>
+    `).join("");
+  }
+  showScreen("screen-result");
+}
+
+// init
+loadTopics();
+renderHome();
+</script>
+</body>
+</html>
