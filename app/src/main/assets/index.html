@@ -1044,7 +1044,58 @@ function saveTopic() {
   saveTopics();
   goHome();
 }
+// ---------- SELECT TOPICS FOR TEST ----------
+let selectedTopicIds = [];
 
+function openSelectScreen() {
+  selectedTopicIds = [];
+  renderSelectList();
+  showScreen("screen-select");
+}
+
+function renderSelectList() {
+  const list = document.getElementById("selectList");
+  const eligible = topics.filter(t => t.questions.length > 0);
+  if (eligible.length === 0) {
+    list.innerHTML = `<div class="empty-box">Testli mavzu yo'q</div>`;
+    return;
+  }
+  list.innerHTML = eligible.map(t => `
+    <label class="topic-card" style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+      <input type="checkbox" value="${t.id}" onchange="toggleTopicSelect('${t.id}', this.checked)" ${selectedTopicIds.includes(t.id) ? "checked" : ""} />
+      <div class="info">
+        <div class="title">${escapeHtml(t.title)}</div>
+        <div class="count">${t.questions.length} ta savol</div>
+      </div>
+    </label>
+  `).join("");
+}
+
+function toggleTopicSelect(id, checked) {
+  if (checked) {
+    if (selectedTopicIds.length >= 5) {
+      alert("Ko'pi bilan 5 ta mavzu tanlash mumkin");
+      renderSelectList();
+      return;
+    }
+    selectedTopicIds.push(id);
+  } else {
+    selectedTopicIds = selectedTopicIds.filter(x => x !== id);
+  }
+  const btn = document.getElementById("startSelectedBtn");
+  btn.disabled = selectedTopicIds.length === 0;
+}
+
+function startSelectedTest() {
+  if (selectedTopicIds.length === 0) return;
+  const all = [];
+  topics.filter(t => selectedTopicIds.includes(t.id)).forEach(t => t.questions.forEach(q => all.push(q)));
+  if (all.length === 0) return;
+  quizIsBig = true;
+  quizQueue = all.map(q => shuffleOptions(q));
+  document.getElementById("quizHeading").textContent = "Test";
+  runQuiz();
+ }
 // ---------- TOPIC VIEW ----------
 function openTopic(id) {
   currentTopicId = id;
