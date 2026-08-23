@@ -219,7 +219,7 @@
 <body>
 
 <header>
-  <p class="eyebrow">O'QITUVCHI UCHUN QO'LLANMA</p>
+  <p class="eyebrow">O'QITUVCHI UCHUN QO'LLANMA</p><button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="openSelectScreen()">Mavzu tanlab test</button>
   <h1 class="serif">Tarix Qo'llanma va Testlar2</h1>
 </header>
 
@@ -230,7 +230,7 @@
       <h3 class="serif">Katta test</h3>
       <p id="bigTestDesc">Barcha mavzulardan yig'ilgan savollar</p>
       <button class="btn btn-gold btn-block" onclick="startBigTest()">Katta testni boshlash</button>
-    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="openSelectScreen()">Mavzu tanlab test</button></div>
 
     <button class="btn btn-primary btn-block" onclick="openForm()">+ Yangi mavzu qo'shish</button>
 
@@ -268,7 +268,18 @@
   </main>
 </div>
 
-<!-- TOPIC VIEW -->
+<!-- SELECT TOPICS FOR TEST -->
+<div class="screen" id="screen-select">
+  <header>
+    <button class="btn-back" onclick="goHome()">‹ Orqaga</button>
+    <h1 class="serif">Mavzu tanlab test</h1>
+  </header>
+  <main>
+    <p style="margin-bottom:10px;">Kamida 1 ta, ko'pi bilan 5 ta mavzu tanlang</p>
+    <div id="selectList"></div>
+    <button class="btn btn-gold btn-block" id="startSelectedBtn" style="margin-top:16px;" onclick="startSelectedTest()" disabled>Tanlangan mavzulardan test</button>
+  </main>
+</div><!-- TOPIC VIEW -->
 <div class="screen" id="screen-topic">
   <div class="topbar">
     <button class="back-btn" onclick="goHome()">←</button>
