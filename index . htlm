@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Tarix Qo'llanma va Testlar2</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    background: #F0E6CF;
+    color: #2B2118;
+    font-family: -apple-system, Roboto, "Segoe UI", Arial, sans-serif;
+  }
+  .serif { font-family: Georgia, "Times New Roman", serif; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  header {
+    padding: 24px 20px 18px;
+    text-align: center;
+    border-bottom: 3px double #C9A227;
+  }
+  header .eyebrow {
+    letter-spacing: 0.25em;
+    font-size: 11px;
+    color: #A4462B;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1B2A4A;
+    line-height: 1.15;
+    margin: 0;
